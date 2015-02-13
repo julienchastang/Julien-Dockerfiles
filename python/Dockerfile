@@ -20,6 +20,8 @@ RUN conda config --add channels https://conda.binstar.org/Unidata
 
 RUN conda create -n unidata --yes python=2 numpy matplotlib cartopy ipython=0.13.2 ipython-notebook=0.13.2 netcdf4 owslib pyudl networkx basemap iris biggus
 
+RUN source activate unidata
+
 RUN mkdir -p /notebooks
 
 WORKDIR /notebooks
@@ -28,4 +30,6 @@ VOLUME /notebooks
 
 EXPOSE 8888
 
-CMD ["ipython", "notebook", "--pylab=inline", "--ip=*", "--no-browser"]
+COPY run.sh /
+
+CMD ["sh", "/run.sh"]
