@@ -58,7 +58,7 @@ ADD init.el /root/.emacs.d/init.el
 # kludge just to force emacs to run once to grab elpa
 RUN emacs --batch -l /root/.emacs.d/init.el || true
 
-#RUN emacs -batch --eval '(let ((current-prefix-arg t)) (call-interactively (quote jedi:install-server)))' || true
+RUN emacs -batch --eval '(quote jedi:install-server)' || true
 
 WORKDIR $WORK_DIR
 
