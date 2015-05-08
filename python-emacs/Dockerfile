@@ -41,7 +41,7 @@ RUN pip install --upgrade pip
 # Install pip related packages related to emacs
 ###
 
-RUN pip install -q ipython jedi rope flake8 epc virtualenv argparse || true
+RUN pip install -q ipython jedi rope flake8 epc virtualenv argparse pylint || true
 
 ###
 # Ancillary Python packages that could be useful
