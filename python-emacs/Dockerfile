@@ -8,7 +8,7 @@ ENV WORK_DIR /root/work
 # emacs and python-emacs releated stuff
 ###
 
-RUN yum install -y curl emacs git
+RUN dnf install -y curl emacs git
 
 # Create some directories
 RUN mkdir -p  /root/.emacs.d/git $WORK_DIR
@@ -29,7 +29,7 @@ RUN git clone -b python https://github.com/julienchastang/dotemacs
 # Install Python, pip
 ###
 
-RUN yum install -y git python python-imaging python-matplotlib
+RUN dnf install -y git python python-imaging python-matplotlib
 
 RUN curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
 
