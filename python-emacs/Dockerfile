@@ -5,18 +5,17 @@ MAINTAINER Julien Chastang <chastang@ucar.edu>
 ###
 # emacs and python-emacs releated stuff
 #
-# wget make and m4 are required for netCDF4-python compilation
 ###
 
 RUN apt-get update
 
-RUN apt-get install -y curl emacs git wget make m4
+RUN apt-get install -y curl emacs git
 
 # Create some directories
 RUN mkdir -p  /root/.emacs.d/git
 RUN mkdir -p  /root/work
 
-# Clone various repos
+# Clone various repos related to emacs
 
 WORKDIR /root/.emacs.d/git
 
@@ -33,11 +32,10 @@ RUN git clone -b python https://github.com/julienchastang/dotemacs
 WORKDIR /root/work
 
 ###
-# Install scipy related stuff
+# Install python and ancillary packages
 ###
 
-RUN apt-get install -y git python python-scipy python-matplotlib \
-  python-pandas python-numpy
+RUN apt-get install -y git python
 
 ###
 # pip
@@ -56,20 +54,12 @@ RUN pip install --upgrade pip
 RUN pip install -q ipython jedi rope flake8 epc virtualenv argparse \
   pylint tornado pyzmq || true
 
-###
-# Install netcdf4-python
-###
-
-COPY install_netcdf4.sh /tmp/
-
-RUN /bin/bash /tmp/install_netcdf4.sh
-
 
 ###
 # Ancillary Python packages that could be useful
 ###
 
-RUN pip install xray seaborn
+#RUN pip install <pip packages>
 
 ###
 # Emacs initialization
