@@ -26,6 +26,8 @@ RUN git clone https://github.com/ahyatt/emacs-websocket
 
 RUN git clone https://github.com/tkf/emacs-request
 
+RUN git clone https://github.com/julienchastang/ob-ipython
+
 RUN git clone -b python https://github.com/julienchastang/dotemacs
 
 WORKDIR /root/work
@@ -52,7 +54,7 @@ RUN pip install --upgrade pip
 ###
 
 RUN pip install -q ipython jedi rope flake8 epc virtualenv argparse \
-  pylint || true
+  pylint tornado pyzmq || true
 
 ###
 # Install netcdf4-python
