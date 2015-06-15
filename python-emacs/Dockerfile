@@ -25,8 +25,6 @@ RUN git clone https://github.com/ahyatt/emacs-websocket
 
 RUN git clone https://github.com/tkf/emacs-request
 
-RUN git clone https://github.com/julienchastang/ob-ipython
-
 RUN git clone -b python https://github.com/julienchastang/dotemacs
 
 WORKDIR /root/work
