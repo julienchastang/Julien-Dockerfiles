@@ -27,13 +27,17 @@ RUN git clone https://github.com/tkf/emacs-request
 
 RUN git clone -b python https://github.com/julienchastang/dotemacs
 
+RUN git clone https://github.com/julienchastang/ob-ipython
+
 WORKDIR /root/work
 
 ###
 # Install python and ancillary packages
+#
+# libzmq3-dev is for pyzmq below
 ###
 
-RUN apt-get install -y git python
+RUN apt-get install -y git python python-dev libzmq3-dev
 
 ###
 # pip
