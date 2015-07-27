@@ -12,7 +12,7 @@ RUN apt-get update
 RUN apt-get -y upgrade
 
 # Install some Linux packages
-RUN apt-get install -y curl
+RUN apt-get install -y curl git
 
 # Create some directories
 RUN mkdir -p /root/downloads 
