@@ -1,68 +1,125 @@
-FROM python-base
+FROM unidata/python
 
 MAINTAINER Julien Chastang <chastang@ucar.edu>
 
+USER root
+
 ###
-# emacs
+# Usual maintenance
 ###
 
 RUN apt-get update
 
-RUN apt-get install -y curl emacs git
+###
+# This is a total hack to prevent later installation steps to ask me about
+# postfix install. This docker container does not need postfix.
+###
 
+run echo "postfix postfix/main_mailer_type string Local only" > /tmp/preseed.txt
+
+run debconf-set-selections /tmp/preseed.txt
+
+run DEBIAN_FRONTEND=noninteractive apt-get install -q -y postfix
+
+###
 # Create some directories
+###
 
-RUN mkdir -p  /root/.emacs.d/git
+RUN mkdir -p /home/python/.emacs.d/git
 
-RUN mkdir -p  /root/work
+RUN mkdir -p /home/python/work
 
+RUN mkdir -p /home/python/downloads
+
+RUN mkdir -p /home/python/bin
+
+###
+# emacs build. default ubuntu version is dreadfully old
+###
+
+RUN apt-get install -y tar curl git build-essential openjdk-8-jre
+
+ENV CURL_CA_BUNDLE /etc/ssl/certs/ca-certificates.crt
+
+ADD cacerts /etc/ssl/certs/java/cacerts
+
+RUN apt-get -y build-dep emacs24
+
+WORKDIR /home/python/downloads
+
+RUN curl -SL http://ftp.gnu.org/gnu/emacs/emacs-24.5.tar.gz -o emacs-24.5.tar.gz
+
+RUN tar xzfv emacs-24.5.tar.gz
+
+WORKDIR /home/python/downloads/emacs-24.5
+
+RUN ./configure && make && make install
+
+RUN chown -R python:python /home/python/
+
+###
 # Clone various repos
+###
 
-WORKDIR /root/.emacs.d/git
+USER python
 
-RUN rm -rf emacs-ipython-notebook && git clone \
-    https://github.com/tkf/emacs-ipython-notebook
+WORKDIR /home/python/.emacs.d/git
 
-RUN rm -rf emacs-websocket && git clone \
-    https://github.com/ahyatt/emacs-websocket
-
-RUN rm -rf emacs-request && git clone https://github.com/tkf/emacs-request
-
-RUN rm -rf dotemacs && git clone -b python-emacs-24.3 \
+RUN rm -rf dotemacs && git clone -b python \
     https://github.com/julienchastang/dotemacs
 
-RUN rm -rf ob-ipython &&  git clone https://github.com/julienchastang/ob-ipython
+RUN rm -rf ob-ipython &&  git clone https://github.com/gregsexton/ob-ipython
 
-WORKDIR /root/work
+RUN rm -rf org-mode && git clone http://orgmode.org/cgit.cgi/org-mode.git
 
-#Conda
+WORKDIR /home/python/.emacs.d/git/org-mode
 
-RUN conda env remove -n scipy || true
+RUN make autoloads
 
-RUN conda create -n scipy --yes --quiet python=2 numpy matplotlib netcdf4 pandas \
-    ipython jedi rope flake8 virtualenv pylint tornado pyzmq pip \
-    xray seaborn
+###
+# Conda
+###
 
-RUN conda install -n scipy --yes --quiet -c http://conda.anaconda.org/auto epc
+ADD conda-packages.txt /home/python/conda-packages.txt
 
-RUN conda install -n scipy --yes --quiet -c https://conda.binstar.org/unidata \
-    metpy siphon
+RUN conda install -n root --file /home/python/conda-packages.txt
  
+RUN pip install epc
+
+###
+# Clojure
+###
+
+WORKDIR /home/python/bin
+
+ENV PATH /home/python/bin:$PATH
+
+RUN curl -SL \
+    https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein -o \
+    lein
+
+RUN sh lein
+
+RUN chmod a+x /home/python/bin/lein
+
+ADD profiles.clj /home/python/.lein/profiles.clj
+
 ###
 # Emacs initialization
 ###
 
-ADD init.el /root/.emacs.d/init.el
+ADD init.el /home/python/.emacs.d/init.el
 
 # kludge just to force emacs to run once to grab elpa
-RUN emacs --batch -l /root/.emacs.d/init.el || true
+RUN emacs --batch -l /home/python/.emacs.d/init.el || true
 
-RUN emacs -batch --eval '(quote jedi:install-server)' || true
+RUN pip install -U /home/python/.emacs.d/elpa/jedi-core*
 
-VOLUME /root/work
+# Get rid of weird versions of org floating around
+RUN rm -rf /home/python/.emacs.d/elpa/org-2*
+
+WORKDIR /home/python/work
+
+VOLUME /home/python/work
 
 CMD "/bin/bash"
-
-# RUN source activate scipy
-
-# CMD "/bin/bash -c 'source activate scipy && emacs'"
