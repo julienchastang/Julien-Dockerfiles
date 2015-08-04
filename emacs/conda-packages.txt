@@ -17,7 +17,7 @@ jinja2
 tornado
 jsonschema
 networkx
-conda-server
+anaconda-client
 jedi
 rope
 flake8
