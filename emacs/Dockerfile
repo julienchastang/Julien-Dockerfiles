@@ -37,7 +37,7 @@ RUN mkdir -p /home/python/bin
 # emacs build. default ubuntu version is dreadfully old
 ###
 
-RUN apt-get install -y tar curl git build-essential openjdk-8-jre
+RUN apt-get install -y tar curl git build-essential openjdk-8-jdk
 
 ENV CURL_CA_BUNDLE /etc/ssl/certs/ca-certificates.crt
 
@@ -68,9 +68,15 @@ WORKDIR /home/python/.emacs.d/git
 RUN rm -rf dotemacs && git clone -b python \
     https://github.com/julienchastang/dotemacs
 
+RUN rm -rf org-mode && git clone http://orgmode.org/cgit.cgi/org-mode.git
+
+# Must manually curate some emacs packages not in melpa-stable
+
 RUN rm -rf ob-ipython &&  git clone https://github.com/gregsexton/ob-ipython
 
-RUN rm -rf org-mode && git clone http://orgmode.org/cgit.cgi/org-mode.git
+RUN rm -rf emacs-rotate && git clone https://github.com/daic-h/emacs-rotate
+
+RUN rm -rf org-present && git clone https://github.com/rlister/org-present 
 
 WORKDIR /home/python/.emacs.d/git/org-mode
 

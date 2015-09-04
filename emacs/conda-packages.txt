@@ -23,3 +23,6 @@ rope
 flake8
 pylint
 pip
+jupyter_client
+ipykernel
+jupyter_console
