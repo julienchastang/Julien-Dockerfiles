@@ -1,0 +1,24 @@
+ name: root
+ channels:
+   - conda-forge
+ dependencies:
+   - python=3
+   - numpy
+   - matplotlib
+   - cartopy
+   - jupyter
+   - metpy
+   - siphon
+   - sphinx
+   - sphinx-gallery
+   - sphinx_rtd_theme
+   - xarray
+   # Fix issues with pint 0.9
+   - pint != 0.9
+   - pip: 
+     - autopep8
+     - yapf
+     - black
+     - flake8
+     - rope
+
