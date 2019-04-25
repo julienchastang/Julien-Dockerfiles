@@ -5,6 +5,20 @@ LABEL maintainer="julien.c.chastang@gmail.com"
 
 USER root
 
+####
+# Emacs 26
+####
+
+RUN apt-get update && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository ppa:kelleyk/emacs && \
+    apt-get install -y emacs26
+
+
+####
+# Everything else
+####
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends ffmpeg && \
     apt-get clean && \
