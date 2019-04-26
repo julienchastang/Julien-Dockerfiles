@@ -6,14 +6,20 @@ LABEL maintainer="julien.c.chastang@gmail.com"
 USER root
 
 ####
-# Emacs 26
+# ZeroMQ
 ####
 
-RUN apt-get update && \
-    apt-get install -y software-properties-common && \
-    add-apt-repository ppa:kelleyk/emacs && \
-    apt-get install -y emacs26
+COPY setup-zeromq.sh /tmp
 
+RUN bash /tmp/setup-zeromq.sh
+
+# ####
+# # Emacs
+# ####
+
+COPY setup-emacs.sh /tmp
+
+RUN bash /tmp/setup-emacs.sh
 
 ####
 # Everything else
@@ -38,13 +44,15 @@ RUN git clone https://code.orgmode.org/bzg/org-mode && \
     git clone -b python https://github.com/julienchastang/dotemacs && \
     git clone https://github.com/rlister/org-present && \
     git clone https://github.com/daic-h/emacs-rotate && \
-    git clone https://github.com/novoid/title-capitalization.el
+    git clone https://github.com/novoid/title-capitalization.el && \
+    git clone https://github.com/dzop/emacs-zmq
 
 RUN mkdir -p $HOME/.emacs.d/wget
 
 WORKDIR $HOME/.emacs.d/wget
 
-RUN mkdir infoplus && wget https://www.emacswiki.org/emacs/download/info%2b.el -O infoplus/info+.el
+RUN mkdir infoplus && \
+    wget https://www.emacswiki.org/emacs/download/info%2b.el -O infoplus/info+.el
 
 ####
 # Make org
@@ -53,6 +61,14 @@ RUN mkdir infoplus && wget https://www.emacswiki.org/emacs/download/info%2b.el -
 WORKDIR $HOME/.emacs.d/git/org-mode
 
 RUN make autoloads
+
+####
+# Make emacs-zmq
+####
+
+WORKDIR $HOME/.emacs.d/git/emacs-zmq
+
+RUN make
 
 WORKDIR $HOME
 
@@ -70,8 +86,3 @@ RUN conda env update --name root -f $HOME/environment.yml && \
     rm -rf $HOME/.emacs.d/elpa/org-2*
 
 CMD "/bin/bash"
-
-
-
-
-
