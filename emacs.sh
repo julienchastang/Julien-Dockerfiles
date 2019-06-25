@@ -13,7 +13,9 @@ PWD=`pwd`
 
 VOLUME=${PWD}/..
 
-IP=$(curl -s ifconfig.co)
+# IP=$(curl -s ifconfig.co)
+
+IP=$(ifconfig | grep inet | grep broadcast | head -1 | awk '$1=="inet" {print $2}')
 
 while [[ $# > 0 ]]
 do
